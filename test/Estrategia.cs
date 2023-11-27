@@ -1,6 +1,6 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
+
 namespace DeepSpace
 {
 
@@ -27,76 +27,42 @@ namespace DeepSpace
 			
 			//se crea una variable planeta a la cual se le asigna el metodo que retorna el planeta de la IA		
 			ArbolGeneral<Planeta> planetaDeIA = this.planetaIA(arbol);
-			
-			//se crea una lista donde se alvergaran los hijos de la IA
-			List<Planeta> hijos = new List<Planeta>();
-			
 
-			//CON EL FOREACH SOLO RECORREMOS LOS HIJOS MÁS CERCANOS, NO TODOS LOS DESCENCIENTES
-			//SE DEBE RECORRER RECURSIVAMENTE
-			foreach(var nodoHijo in planetaDeIA.getHijos()){
-				
-				//creo lista para almacenar la población de cada nodo hijo
-				List<Planeta> listaAux = new List<Planeta>();
-				
-				hijos.Add(nodoHijo.getDatoRaiz());
-				
-				listaAux.Add(nodoHijo.getDatoRaiz());
-				
+			//creo una lista y genero la recursion, este metodo me devolvera la lista de los desencientes de la IA
+			List<string> listaRecorrida = recorrerArbol(planetaDeIA);
+			
+			//creo una variable string para almacenar los datos de cada planeta en forma de string
+			string listaNodos = "";
+			
+			//con el foreach recorro cada elemento de listaRecorrida, la lista que retornada donde se genero la recursión
+			foreach(var elemento in listaRecorrida){
+				listaNodos += elemento.ToString() + " , ";	//por cada elemento de la lista se agregara a la variable listaNodos, generando un string con todos los elementos
 			}
 			
-			foreach(var elemento in hijos){
-				
-					
-				Console.WriteLine(elemento.population.ToString());
-				return "Hijos de la IA";
-			}
-			
-			return "2) IA: ";	
+			return "2) Descendientes de la IA: " + listaNodos.ToString();	
 		}
 		
+		
+		//recorre un arbol que le pasen por parametro
+		private List<string> recorrerArbol (ArbolGeneral<Planeta> arbol){
+			
+			//creo lista para almacenar nodos
+			List<string> listado = new List<string>();
+			
+			//proceso primero la raiz
+			listado.Add(arbol.getDatoRaiz().population.ToString());
+			
+			//visito cada hijo del nodo actual
+			foreach(var subArbol in arbol.getHijos()){
+				
+				listado.AddRange(recorrerArbol(subArbol));
+			}
+			return listado;
+		}
 		
 
-		private List<Planeta> descendienteDeNodo(List<Planeta> listadoDeDescendientes, ArbolGeneral<Planeta> arbol){
-			
-			//caso base, si el nodo es hoja, agregar el nodo a la lista y retornarla
-			if(arbol.esHoja()){
-				listadoDeDescendientes.Add(arbol.getDatoRaiz());
-				
-				return listadoDeDescendientes;
-			}
-			
-			else{
-				//creo lista auxiliar para albergar listado de nodos descendientes
-				List<Planeta> listadoAuxiliar = new List<Planeta>();
-				
-				//creo arbol auxiliar y genero la recursón
-				ArbolGeneral<Planeta> planetaAux = this.descendienteDeNodo(listadoAuxiliar, arbol);
-				
-				//chequear si con cada recursion se crea una nueva lista o funciona
-				//quedaria hacer la comparación de las listas y quedarse con la que contenga los nodos
-				
-				
-				
-			}
-		}
-			
-		
-		public List<Planeta> ObtenerNodosHijosRecursivo(ArbolGeneral<Planeta> arbol){
-		
-		    List<Planeta> listaNodosHijos = new List<Planeta>();
-		
-		    foreach (var nodo in arbol.getHijos())
-		    {
-		    	listaNodosHijos.Add(nodo.getDatoRaiz());
-		        listaNodosHijos.AddRange(ObtenerNodosHijosRecursivo(nodo));
-		    }
-		
-		    return listaNodosHijos;
-		}
-		
-			
-		public ArbolGeneral<Planeta> planetaIA (ArbolGeneral<Planeta> arbol){
+		//retorna el nodo de la IA	
+		private ArbolGeneral<Planeta> planetaIA (ArbolGeneral<Planeta> arbol){
 			
 			//si el nodo evaluado es de la IA, lo retorna, caso base
 			if (arbol.getDatoRaiz().EsPlanetaDeLaIA())
@@ -112,24 +78,11 @@ namespace DeepSpace
 						return elementoNodo;
 				}
 				return null;
-				
-			}
-			
-		}
-		//CHEQUEAR SI SE PUEDE CON EL ULTIMO ELEMENTO DE LA LISTA DE CAMINOHASTAIA
+			}	
+		}		
 		
-		public void listadoNodos (List<Planeta> camino, ArbolGeneral<Planeta> arbol){
-			this._calcularMovimiento1(camino, arbol);
-			
-			foreach(var elem in camino){
-				Console.Write(elem.population + ", ");
-				
-			}
-			
-		}
-		
-	
 
+		
 		//retorna contador con la suma de la poblacion de todos los planetas
 		private long _Consulta3(List<Planeta> camino, ArbolGeneral<Planeta> arbol, long contador){
 			
@@ -146,66 +99,29 @@ namespace DeepSpace
 		}
 		
 		
-		//retorna el número de planetas con población mayor a la cantidad promedio del árbol
+		// Calcula y retorna en un texto la población total y promedio por cada nivel del árbol.
 		public String Consulta3( ArbolGeneral<Planeta> arbol)
 		{	
+			//POBLACION TOTAL
+			List<Planeta> camino = new List<Planeta>();
 			
-			return arbol.porNivelesConSeparacion().ToString();
+			long contador = 0;
+			
+			long contadorTotal = this._Consulta3(camino, arbol, contador);
+			
+			
+			//PROMEDIO POR CADA NIVEL DEL ÁRBOL
+			Cola<ArbolGeneral<Planeta>> niveles = arbol.porNivelesConSeparacion();
+			
+			
+			
+			
+			return "3) Total de naves: " + contadorTotal.ToString() + "\n" + niveles;
+			
 			
 		}
 
 		
-		
-		
-		//retorna lista de hijos de un planeta
-		private List<Planeta> buscarHijos(List<Planeta> hijos, ArbolGeneral<Planeta> arbol){
-			
-			if(arbol.esHoja()){						//si arbol es hoja
-				hijos.Add(arbol.getDatoRaiz());		//agrega ese planeta del arbol a la lista hijos
-				return hijos;						//retorna lista hijos. Caso base
-			}
-			else{														//sino es hoja
-				foreach(var subArbol in arbol.getHijos()){					//por cada variable subarbol en Arbol.gethijos()
-																				
-					if(!arbol.getDatoRaiz().Equals(hijos[hijos.Count-1])){	  //si el planeta del arbol NO es igual a el ultimo elemento de la lista hijos
-																			  
-						hijos.Add(arbol.getDatoRaiz());						  		//agregar ese planeta del arbol a la lista hijos
-					}															
-					List<Planeta> hijosAux = this.buscarHijos(hijos, subArbol);
-																			  //creo lista hijosAux y genero la recursion para entrar a los hijos del arbol
-
-					return hijosAux;										  //retorno la lista de hijos del hijo del arbol procesado
-				}													
-			}														
-			return hijos;										//se retorna la lista obtenida		
-		}
-
-		
-
-		
-		//retorna un camino desde la raiz hasta el nodo de la IA
-		private List<Planeta> _calcularIA(List<Planeta> camino,ArbolGeneral<Planeta> arbol)
-		{
-			//primero proceso la raiz del arbol, agregandola a una lista
-			camino.Add(arbol.getDatoRaiz());
-			
-			//si encontramos planeta
-			if(arbol.getDatoRaiz().EsPlanetaDeLaIA())
-				return camino;		//retornamos camino encontrado, primer iteracion caso base
-			
-			else{
-				//luego se procesan hijos recursivamente
-				foreach(var hijo in arbol.getHijos()){
-					List<Planeta> caminoAux = _calcularIA(camino, hijo);
-					
-					if(caminoAux != null)
-						return caminoAux;
-				}
-				//si el camino recorrida no encuentra un nodo de la IA se descartan nodos inutiles
-				camino.RemoveAt(camino.Count - 1);		
-			}
-			return null;
-		}
 		
 		
 		//retorna camino desde la raiz hasta planeta del Jugador
@@ -233,7 +149,6 @@ namespace DeepSpace
 			}
 			return null;
 		}
-		
 		
 		
 		//retorna una lista con un camino desde la raiz hasta el planeta de la IA
