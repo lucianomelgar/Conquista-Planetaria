@@ -110,13 +110,7 @@ namespace DeepSpace
 			long contadorTotal = this._Consulta3(camino, arbol, contador);
 			
 			
-			//PROMEDIO POR CADA NIVEL DEL ÁRBOL
-			Cola<ArbolGeneral<Planeta>> niveles = arbol.porNivelesConSeparacion();
-			
-			
-			
-			
-			return "3) Total de naves: " + contadorTotal.ToString() + "\n" + niveles;
+			return "3) Total de naves: " + contadorTotal.ToString();
 			
 			
 		}

@@ -36,28 +36,6 @@ namespace DeepSpace
 		public bool esVacio() {
 			return this.dato == null;
 		}
-	
-		public int altura()
-		{
-			if (this.esHoja())
-				return 0;
-			else
-			{
-				int alturaMaxima=-1;
-				foreach(var element in this.getHijos())
-				{
-					int alturaHijo= element.altura();
-					
-					if (alturaHijo>alturaMaxima)
-					{
-						alturaMaxima=alturaHijo;
-					}
-					
-				}
-				
-				return alturaMaxima + 1;			
-			}
-		}
 		
 		public Cola<ArbolGeneral<T>> porNivelesConSeparacion(){
 			
